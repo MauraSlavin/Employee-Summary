@@ -1,7 +1,7 @@
 // inquirer is used to prompt the user for employee information
 const inquirer = require("inquirer");
-const Employee = require("./Develop/classes/employee");
-const Manager = require("./Develop/classes/manager");
+const Employee = require("./lib/Employee");
+const Manager = require("./lib/Manager");
 
 
 
