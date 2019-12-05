@@ -1,0 +1,27 @@
+h1 {
+    height: 100px;
+    background-color: lightblue;
+    padding: 25px;
+    vertical-align: middle;
+    font-size: 50px;
+}
+
+.row-margin {
+    margin: 15px;
+}
+
+.col-margin {
+    margin: 15px;
+}
+
+.card-top {
+    height: 100%;
+    padding: 10px;
+    color:white;
+    background-color: blue;
+}
+
+.card-bottom {
+    padding: 10px;
+    background-color: lightblue;
+}
