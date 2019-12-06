@@ -51,4 +51,4 @@ let employees = [
 
 writeHtml.write(employees);
 
-open("./Assets/output/output.html");
+open("./output/output.html");
