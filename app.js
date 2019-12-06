@@ -8,7 +8,7 @@ const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const Ask = require("./lib/Ask");
+const ask = require("./lib/ask");
 
 // pull in writeHtml code
 const writeHtml = require("./lib/writeHtml");
@@ -45,8 +45,9 @@ let employees = [
 // }
 ];
 
-Ask.ask();
+const employee = ask.ask();
+console.log(employee);
 
 writeHtml.write(employees);
 
-open("./output/output.html");
+open("lib/output/output.html");
