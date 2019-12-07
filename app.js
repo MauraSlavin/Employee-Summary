@@ -14,9 +14,11 @@ const Intern = require("./lib/Intern");
 // pull in writeHtml code to write the HTML to a file
 const writeHtml = require("./lib/writeHtml");
 
-// Only one manager allowed.  Exclude Manager from choices once one is entered.
+// Only one manager allowed.  Set up variables to exclude Manager from choices once one is entered.
 let haveManager = false;
+// list of title choices before manager is entered.
 let titleChoices = ["Manager", "Engineer", "Intern"];
+// list of title choices after a manager has been entered.
 let titleChoicesNoMgr = ["Engineer", "Intern"];
 
 // the array of employees starts out empty
@@ -29,6 +31,7 @@ const questions = [
     type: "input",
     name: "name",
     message: "What is the name of the employee?",
+    // check to make sure there isn't already an employee by that name
     validate: validateName()
   },
   {
@@ -36,12 +39,14 @@ const questions = [
     type: "input",
     name: "id",
     message: "Please assign a unique employee id number (enter a number):",
+    // check to make sure the ID is a number, and is not already being used.
     validate: validateID()
   },
   {
     type: "input",
     name: "email",
     message: "What is the employee's email address?",
+    //  make sure it's formatted as an email (@, etc.)
     validate: validateEmail()
   },
   {
@@ -49,6 +54,7 @@ const questions = [
     name: "title",
     message: "What is the employee's role? (Note: only one manager permitted.)",
     when: noManagerYet(),
+    // "Manager" is included as a choice if none entered, yet.
     choices: titleChoices
   },
   {
@@ -56,6 +62,7 @@ const questions = [
     name: "title",
     message: "What is the employee's role? (Note: only one manager permitted.)",
     when: haveManagerYet(),
+    // "Manager" is NOT included as a choice if there already is one entered.
     choices: titleChoicesNoMgr
   },
 
@@ -84,6 +91,7 @@ const questions = [
   },
 
   // repeat all the questions if the user has more employees to enter
+  // this is done recursively
   {
     type: "confirm",
     name: "more",
@@ -92,15 +100,16 @@ const questions = [
   }
 ];
 
-// returns true if the title passed in matches the role(title) entered.
+// returns true if the title passed in matches the role(title) entered (to determine what role-specific question to ask)
 function whichTitle(title) {
   return function(answers) {
     return answers.title == title;
   };
 }
 
-// returns true if the id is a unique id number.
+// returns true if the id is a unique id number; displays error message and returns false if not a valid entry.
 function validateID() {
+  // answers is the id entered
   return function(answers) {
     let valid = true;
     if (isNaN(answers)) {
@@ -108,14 +117,16 @@ function validateID() {
       console.log(`\n${err}`);
       valid = false;
       return valid;
-    }
+    };
+    // check for a matching id for all employees already entered
     employees.forEach(emp => {
       if (emp.id == answers) {
+        // emp.id is the id being checked against this iteration
         const err = `The ID number ${emp.id} is has been assigned to ${emp.name}.  \nPlease assign a unique ID number.`;
         console.log(`\n${err}`);
         valid = false;
         return valid;
-      }
+      };
     });
     return valid;
   };
@@ -125,6 +136,7 @@ function validateID() {
 function validateName() {
   return function(answers) {
     let valid = true;
+    // for each employee already entered, check and see if the name matches (not case-sensitive)
     employees.forEach(emp => {
       if (emp.name.toLowerCase() == answers.toLowerCase()) {
         const err = `This name has already been entered.  Please enter a unique name (use middle name/initials, if needed).`;
@@ -137,7 +149,7 @@ function validateName() {
   };
 }
 
-// returns true if the title passed in matches the role(title) entered.
+// returns true if the email entered is formatted as a valid email address.
 function validateEmail() {
   return function(answers) {
     if (validator.validate(answers)) {
