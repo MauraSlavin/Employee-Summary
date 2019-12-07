@@ -1,4 +1,4 @@
-// inquirer is used to prompt the user for employee information
+// needed to ask questions (have a conversation) on the CDL with the user
 const inquirer = require("inquirer");
 // open to open the html file when done
 const open = require("open");
@@ -8,46 +8,97 @@ const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const ask = require("./lib/ask");
 
-// pull in writeHtml code
+// pull in writeHtml code to write the HTML to a file
 const writeHtml = require("./lib/writeHtml");
 
-// test data
-let employees = [
-//     {
-//     name: "Maura",
-//     id: 0,
-//     email: "this@email",
-//     title: "Manager",
-//     officeNumber: 222
-// },
-//     {
-//     name: "Danielle",
-//     id: 1,
-//     email: "that@email",
-//     title: "Engineer",
-//     github: "D Slavin"
-// },
-//     {
-//     name: "Mike",
-//     id: 2,
-//     email: "another@email",
-//     title: "Engineer",
-//     github: "M Slavin"
-// },
-//     {
-//     name: "Camden",
-//     id: 3,
-//     email: "unh@email",
-//     title: "Intern",
-//     school: "UNH"
-// }
+// the array of employees starts out empty
+var employees = [];
+
+// these are the questions that will be asked
+const questions = [
+  // Name, ID number, email and role is needed for all employees
+  {
+    type: "input",
+    name: "name",
+    message: "What is the name of the employee?"
+  },
+  {
+    type: "number",
+    name: "id",
+    message: "Please assign an employee id number (enter a number)."
+  },
+  {
+    type: "input",
+    name: "email",
+    message: "What is the employee's email address?"
+  },
+  {
+    type: "list",
+    name: "title",
+    message: "What is the employee's role?",
+    choices: ["Manager", "Engineer", "Intern"]
+  },
+
+  // only ask for office number of the manager
+  {
+    type: "input",
+    name: "officeNumber",
+    message: "What is the manager's office number?",
+    when: whichTitle("Manager")
+  },
+
+  // only ask for Github username for an engineer
+  {
+    type: "input",
+    name: "github",
+    message: "What is the engineer's Github username?",
+    when: whichTitle("Engineer")
+  },
+
+  // only ask for the school of an intern
+  {
+    type: "input",
+    name: "school",
+    message: "What is the intern's school?",
+    when: whichTitle("Intern")
+  },
+
+  // repeat all the questions if the user has more employees to enter
+  {
+    type: "confirm",
+    name: "more",
+    message: "Do you have more employees to enter (hit ENTER for Yes)?",
+    default: true
+  }
 ];
 
-const employee = ask.ask();
-console.log(employee);
+// returns true if the title passed in matches the role(title) entered.
+function whichTitle(title) {
+  return function(answers) {
+    return answers.title == title;
+  };
+};
 
-writeHtml.write(employees);
+// asks and processes the questions
+function conversation() {
+  // uses provided questions to have a conversation to build an employee object
+  inquirer.prompt(questions).then(employee => {
+    // push the new employee object to the array of employees
+    employees.push(employee);
+    if (employee.more) {
+      // if user has more employees to enter, start the conversation again, recursively
+      conversation();
+    } else {
+      // when done entering employees, write HTML file
+      writeHtml.write(employees);
+      // and open the html file.
+      open("lib/output/output.html");
+    }
 
-open("lib/output/output.html");
+  });
+};
+
+
+// Starts the app with a conversation asking about each employee
+conversation();
