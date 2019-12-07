@@ -23,7 +23,8 @@ const questions = [
   {
     type: "input",
     name: "name",
-    message: "What is the name of the employee?"
+    message: "What is the name of the employee?",
+    validate: validateName()
   },
   {
     // putting "number" for type wouldn't let the user backspace over "NaN" if they entered text; or backspace over an invalid number.
@@ -98,6 +99,22 @@ function validateID() {
     employees.forEach(emp => {
       if (emp.id == answers) {
         const err = `The ID number ${emp.id} is has been assigned to ${emp.name}.  \nPlease assign a unique ID number.`;
+        console.log(`\n${err}`);
+        valid = false;
+        return valid;
+      };
+    });
+    return valid;
+  };
+};
+
+// returns true if the name is unique.
+function validateName() {
+  return function(answers) {
+    let valid = true;
+        employees.forEach(emp => {
+      if (emp.name.toLowerCase() == answers.toLowerCase()) {
+        const err = `This name has already been entered.  Please enter a unique name (use middle name/initials, if needed).`;
         console.log(`\n${err}`);
         valid = false;
         return valid;
